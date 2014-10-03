@@ -4,7 +4,6 @@ Sample Selenium Test Script
 
 Authors: 
 Steven Bennett
-Wayne Jackson
 
 Description:
 This Selenium project launches a Firefox window to Amazon.com.  From here it attempts to test the basic functionality of
