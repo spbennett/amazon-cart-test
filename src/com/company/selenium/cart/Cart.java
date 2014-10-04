@@ -1,9 +1,5 @@
-/* Generic package name, Java classes like to use packages to organize their directory structures. */
 package com.company.selenium.cart;
 
-/* Import the Selenium server classes from the library file we included in our lib folder so we can invoke
-the Selenium driver methods.
- */
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -30,10 +26,16 @@ public class Cart {
 
         System.out.print("Verifying initial cart contents...");
         String cartElement = "";
-        int cartCount = 0;
-        /*
-        Write some steps here to find the cart element on the page with Selenium.
-         */
+        try {
+            cartElement = driver.findElement(By.id("nav-cart-count")).getText();
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            // Couldn't find cart count, try alternate lookup.
+            //cartElement = driver.findElement(By.id("nav-cart")).findElement(By.tagName("span")).getAttribute("nav-cart-count");
+            System.err.println("ERROR");
+            System.err.println("Unable to find cart count.");
+            System.exit(1);
+        }
+        int cartCount = Integer.parseInt(cartElement);
         if (cartCount == 0) {
             System.out.println("PASS");
         } else {
@@ -43,10 +45,9 @@ public class Cart {
         }
 
         System.out.print("Performing search...");
-        /*
-        Find the query box and enter our query into it.  When you simulate the enter key, it should bring us to the
-        result page of the search.
-         */
+        WebElement searchBox = driver.findElement(By.id("twotabsearchtextbox"));
+        searchBox.sendKeys(AMAZON_QUERY + Keys.RETURN);
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         if ( driver.getCurrentUrl().compareTo(AMAZON_URL) != 0) {
             /* Page successfully changed... don't know if it's the right page but going to assume it is. */
             System.out.println("PASS");
@@ -57,15 +58,16 @@ public class Cart {
         }
 
         System.out.print("Adding item to cart...");
-        /*
-        Find a way to open the page of a result product and click the add to cart element.
-         */
+        String itemLink = driver.findElement(By.id("result_0")).findElement(By.className("newaps")).findElement(By.tagName("a")).getAttribute("href");
+        driver.get(itemLink);
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        WebElement addToCart = driver.findElement(By.id("submit.add-to-cart"));
+        addToCart.click();
         System.out.println("PASS");
 
         System.out.print("Verifying final cart contents...");
-        /*
-        Like in the first step, find the cart element, breakout the cart count and verify the count is now 1.
-         */
+        cartElement = driver.findElement(By.id("nav-cart-count")).getText();
+        cartCount = Integer.parseInt(cartElement);
         if (cartCount == 1) {
             System.out.println("PASS");
         } else {
